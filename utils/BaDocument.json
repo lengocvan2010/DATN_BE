@@ -1,0 +1,21 @@
+{
+    "project": {
+        "type": null,
+        "description": null,
+        "targetUsers": []
+    },
+    "design": {
+        "mainColor": null,
+        "style": null,
+        "tone": null
+    },
+    "pages": [],
+    "references": {
+        "websites": [],
+        "notes": null
+    },
+    "status": {
+        "currentStep": "pages",
+        "missing": []
+    }
+}
