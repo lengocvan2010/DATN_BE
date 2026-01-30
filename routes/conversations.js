@@ -248,16 +248,39 @@ async function runGenerateAndDeploy(uiDraft) {
 
 // ==================== Routes ====================
 
-/* GET all conversations */
-router.get('/', async function (req, res, next) {
-    try {
-        const conversations = await Conversation.find({}).sort({ createdAt: -1 });
-        res.json({ success: true, count: conversations.length, data: conversations });
-    } catch (error) {
-        console.error('Error fetching conversations:', error);
-        res.status(500).json({ success: false, message: 'Error fetching conversations', error: error.message });
+/* GET all conversations (filter by accountId) */
+router.get('/', async function (req, res) {
+  try {
+    const { accountId } = req.query
+
+    // nếu không có accountId → trả mảng rỗng (hoặc error tuỳ bạn)
+    if (!accountId) {
+      return res.json({
+        success: true,
+        count: 0,
+        data: []
+      })
     }
-});
+
+    const conversations = await Conversation
+      .find({ accountId })
+      .sort({ createdAt: -1 })
+
+    res.json({
+      success: true,
+      count: conversations.length,
+      data: conversations
+    })
+  } catch (error) {
+    console.error('Error fetching conversations:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching conversations',
+      error: error.message
+    })
+  }
+})
+
 
 /* GET first conversation with messages */
 router.get('/first-with-messages', async function (req, res, next) {
@@ -403,6 +426,7 @@ router.post('/newmessage', async function (req, res, next) {
         // Tạo conversation mới nếu chưa có
         if (!conversationId) {
             const newConversation = new Conversation({
+                accountId: message.accountId,
                 title: message.content
                     ?.trim()
                     .split(/\s+/)
@@ -522,7 +546,7 @@ router.post('/newmessage', async function (req, res, next) {
                 });
             }
 
-            const conversations = await Conversation.find({}).sort({ updatedAt: -1 });
+            const conversations = await Conversation.find({accountId: message.accountId}).sort({ updatedAt: -1 });
             const loadMessages = await Message.find({ conversation_id: conversationId }).sort({ createdAt: 1 });
 
             res.json({

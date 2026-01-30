@@ -5,6 +5,10 @@ const conversationSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  accountId: {
+    type: String,
+    default: ''
+  },
   createdAt: {
     type: Date,
     default: Date.now
